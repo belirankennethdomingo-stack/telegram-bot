@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -15,7 +14,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-=======
+
 import os
 import telebot
 from flask import Flask, request
@@ -64,4 +63,4 @@ def webhook():
 
 if __name__ == "__main__":
     server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
->>>>>>> d456a0cd3c142e36a9ad9b99b99a36126c62efc7
+ d456a0cd3c142e36a9ad9b99b99a36126c62efc7
