@@ -9,7 +9,7 @@ server = Flask(__name__)
 # /start command
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, "Hello! I'm your bot for your personal logs everytime you enter/exit the campus!!✅")
+    bot.reply_to(message, "Hello! I'm your bot for your personal logs everytime you enter/exit the campus✅")
 
 # /help command
 @bot.message_handler(commands=['help'])
@@ -25,8 +25,7 @@ Available commands:
 # /about command
 @bot.message_handler(commands=['about'])
 def send_about(message):
-    bot.reply_to(message, "This bot was created by Kenneth Beliran. It’s hosted 24/7 on Render and designed to support projects like automation, data logging, and RFID-based systems. 🚀
-")
+    bot.reply_to(message, "I’m a bot deployed on Render, created by Kenneth Beliran 🎉")
 
 # Fallback handler (for unknown text)
 @bot.message_handler(func=lambda message: True)
