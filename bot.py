@@ -1,47 +1,43 @@
 import os
-import telebot
-from flask import Flask, request
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
-bot = telebot.TeleBot(TOKEN)
-server = Flask(__name__)
 
 # /start command
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    bot.reply_to(message, "Hello! I'm your bot for your personal logs everytime you enter/exit the campus✅")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Hello! I'm your bot for you personal logs everytime you enter/exit the campus✅")
 
 # /help command
-@bot.message_handler(commands=['help'])
-def send_help(message):
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_text = """
 Available commands:
 /start - Start the bot
 /help - Show this help menu
 /about - Learn more about this bot
 """
-    bot.reply_to(message, help_text)
+    await update.message.reply_text(help_text)
 
 # /about command
-@bot.message_handler(commands=['about'])
-def send_about(message):
-    bot.reply_to(message, "I’m a bot deployed on Render, created by Kenneth Beliran 🎉")
+async def about(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("I’m a bot deployed on Render, created by Kenneth Beliran 🎉")
 
-# Fallback handler (for unknown text)
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    bot.reply_to(message, "I don’t understand that command. Type /help for options.")
+# Fallback for unknown messages
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("I don’t understand that command. Type /help for options.")
 
-@server.route('/' + TOKEN, methods=['POST'])
-def getMessage():
-    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
-    return "!", 200
+def main():
+    app = Application.builder().token(TOKEN).build()
 
-@server.route("/")
-def webhook():
-    bot.remove_webhook()
-    bot.set_webhook(url='https://telegram-bot-njfi.onrender.com' + TOKEN)
-    return "!", 200
+    # Commands
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("about", about))
+
+    # Fallback
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+
+    app.run_polling()
 
 if __name__ == "__main__":
-    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+    main()
