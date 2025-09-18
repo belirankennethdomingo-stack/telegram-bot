@@ -1,4 +1,5 @@
 import os
+import json
 from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import (
     Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
@@ -11,7 +12,14 @@ from datetime import datetime
 
 # ---------------- Google Sheets + Drive Setup ----------------
 scope = ["https://spreadsheets.google.com/feeds","https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+
+# Read credentials from environment variable
+creds_json = os.environ.get("GOOGLE_CREDS_JSON")
+if not creds_json:
+    raise Exception("GOOGLE_CREDS_JSON environment variable not set!")
+creds_dict = json.loads(creds_json)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
 gc = gspread.authorize(creds)
 sheet = gc.open("ParkingBot Data").sheet1  # Replace with your Google Sheet name
 
@@ -137,7 +145,10 @@ async def register_orcr(update: Update, context: ContextTypes.DEFAULT_TYPE):
         datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     ])
 
-    await update.message.reply_text("✅ Registration complete! Your OR/CR has been uploaded.", reply_markup=ReplyKeyboardRemove())
+    await update.message.reply_text(
+        "✅ Registration complete! Your OR/CR has been uploaded.",
+        reply_markup=ReplyKeyboardRemove()
+    )
     return ConversationHandler.END
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -147,6 +158,9 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ---------------- Main ----------------
 def main():
     TOKEN = os.environ.get("TELEGRAM_TOKEN")
+    if not TOKEN:
+        raise Exception("TELEGRAM_TOKEN environment variable not set!")
+
     app = Application.builder().token(TOKEN).build()
 
     # Commands
