@@ -11,12 +11,13 @@ from pydrive.drive import GoogleDrive
 from datetime import datetime
 
 # ---------------- Google Sheets + Drive Setup ----------------
-scope = ["https://spreadsheets.google.com/feeds","https://www.googleapis.com/auth/drive"]
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
 # Read credentials from environment variable
 creds_json = os.environ.get("GOOGLE_CREDS_JSON")
 if not creds_json:
     raise Exception("GOOGLE_CREDS_JSON environment variable not set!")
+
 creds_dict = json.loads(creds_json)
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 
